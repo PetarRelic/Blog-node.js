@@ -5,9 +5,12 @@ const fs = require('fs');
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const session = require('express-session');
+const MongoDBStore = require('connect-mongodb-session')(session);
 const multer = require('multer');
 
 //calling of custom modules
+const errorController = require('./controllers/error');
 const User = require('./models/user');
 
 // database connection string
@@ -15,6 +18,10 @@ const MONGODB_URI = 'mongodb+srv://admin:admin@cluster0-4qmwr.mongodb.net/blog?r
 
 //MIDDLEWARES
 const app = express();
+const store = new MongoDBStore({
+    uri: MONGODB_URI,
+    collection: 'sessions'
+});
 
 const fileStorage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -38,6 +45,8 @@ const fileFilter = (req, file, cb) => {
     }
 };
 
+app.set('view engine', 'ejs');
+
 //routes
 const adminRoutes = require('./routes/admin');
 
@@ -50,13 +59,54 @@ app.use(
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/images', express.static(path.join(__dirname, 'images')));
 
+app.use(session({
+    secret: 'my secret',
+    resave: false,
+    saveUninitialized: false,
+    store: store
+}));
 
+//authentication check
+app.use((req, res, next) => {
+    res.locals.isAuthenticated = req.session.isLoggedIn;
+    next();
+});
+
+app.use((req, res, next) => {
+    if(!req.session.user){
+        return next();
+    }
+    User.findById(req.session.user._id)
+        .then(user => {
+            if(!user){
+                return next();
+            }
+            req.user = user;
+            next();
+        })
+        .catch(err => {
+            next(new Error(err));
+        });
+});
+
+//admin route
 app.use('/admin', adminRoutes);
+
+app.get('/500', errorController.get500);
+app.use(errorController.get404);
+app.use((error, req, res, next) => {
+    console.log(error);
+    res.status(500).render('500', {
+        pageTitle: 'Error!',
+        path: '/500',
+        isAuthenticated: req.session.isLoggedIn
+    });
+});
 
 
 mongoose.connect(MONGODB_URI, { useNewUrlParser:true })
     .then(result => {
-        app.listen(process.env.PORT || 3000);
+        app.listen(3000);
     })
     .catch(err => {
         console.log(err);

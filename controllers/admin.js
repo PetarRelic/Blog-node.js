@@ -13,10 +13,10 @@ exports.getPosts = async (req, res, next) => {
             .skip((currentPage - 1) * perPage)
             .limit(perPage);
         
-        res.status(200).render('admin/products', {
+        res.status(200).render('admin/posts', {
             posts: posts,
             pageTitle: 'Posts',
-            path: '/admin/products',
+            path: '/admin/posts',
             totalItems: totalItems
         });
     } catch(err) {

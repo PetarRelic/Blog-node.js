@@ -1,0 +1,27 @@
+.post-form {
+    width: 20rem;
+    max-width: 90%;
+    margin: auto;
+    display: block;
+}
+
+.post-item {
+    width: 20rem;
+    max-width: 95%;
+    margin: 1rem;
+}
+
+.post__title {
+    font-size: 1.2rem;
+    text-align: center;
+}
+
+.post__price {
+    text-align: center;
+    color: #4d4d4d;
+    margin-bottom: 0.5rem;
+}
+
+.post__description {
+    text-align: center;
+}
