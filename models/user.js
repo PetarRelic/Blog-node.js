@@ -7,18 +7,19 @@ const userSchema = new Schema({
         type: String,
         required: true
     },
-    name: {
-        type: String,
-        required: true
-    },
     password: {
         type: String,
         required: true
     },
-    role: {
-        type: Boolean,
-        required: true,
-        default: false
+    posts: { post: [
+        {
+            postId: {
+                type: Schema.Types.ObjectId,
+                ref: 'Post',
+                required: true
+            }
+        }
+        ]
     }
 });
 

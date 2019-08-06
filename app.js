@@ -7,6 +7,8 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
+const csrf = require('csurf');
+const flash = require('connect-flash');
 const multer = require('multer');
 
 //calling of custom modules
@@ -22,6 +24,7 @@ const store = new MongoDBStore({
     uri: MONGODB_URI,
     collection: 'sessions'
 });
+const csrfProtection = csrf();
 
 const fileStorage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -49,6 +52,7 @@ app.set('view engine', 'ejs');
 
 //routes
 const adminRoutes = require('./routes/admin');
+const authRoutes = require('./routes/auth');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 
@@ -65,6 +69,9 @@ app.use(session({
     saveUninitialized: false,
     store: store
 }));
+
+app.use(flash());
+
 
 //authentication check
 app.use((req, res, next) => {
@@ -89,8 +96,15 @@ app.use((req, res, next) => {
         });
 });
 
-//admin route
+app.use(csrfProtection);
+app.use((req, res, next) => {
+    res.locals.csrfToken = req.csrfToken();
+    next(); 
+});
+
+//use of routes
 app.use('/admin', adminRoutes);
+app.use(authRoutes);
 
 app.get('/500', errorController.get500);
 app.use(errorController.get404);
