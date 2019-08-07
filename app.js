@@ -52,6 +52,7 @@ app.set('view engine', 'ejs');
 
 //routes
 const adminRoutes = require('./routes/admin');
+const blogRoutes = require('./routes/blog');
 const authRoutes = require('./routes/auth');
 
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -104,6 +105,7 @@ app.use((req, res, next) => {
 
 //use of routes
 app.use('/admin', adminRoutes);
+app.use(blogRoutes);
 app.use(authRoutes);
 
 app.get('/500', errorController.get500);

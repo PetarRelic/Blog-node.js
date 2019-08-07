@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const fileHelper = require('../util/file');
 
 const { validationResult } = require('express-validator');
 
@@ -95,5 +96,99 @@ exports.postAddPost = (req, res, next) => {
             const error = new Error(err);
             error.httpStatusCode = 500;
             return next(error);
+        });
+};
+
+exports.getEditPost = (req, res, next) => {
+    const editMode = req.query.edit;
+    if(!editMode){
+        return res.redirect('/');
+    }
+    const postId = req.params.postId;
+    Post.findById(postId)
+        .then(post => {
+            if(!post){
+                return res.redirect('/');
+            }
+            res.render('admin/edit-post', {
+                pageTitle: 'Edit Post',
+                path: '/admin/edit-post',
+                editing: editMode,
+                post: post,
+                hasError: false,
+                errorMessage: null,
+                validationErrors: []
+            });
+        })
+        .catch(err => {
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);
+        })
+};
+
+exports.postEditPost = (req, res, next) => {
+    const postId = req.body.postId;
+    const updatedTitle = req.body.title;
+    const image = req.file;
+    const updatedContent = req.body.content;
+
+    const errors = validationResult(req);
+
+    if(!errors.isEmpty()){
+        return res.status(422).render('/admin/edit-post', {
+            pageTitle: 'Edit Post',
+            path: '/admin/edit-post',
+            editing: true,
+            hasError: true,
+            post: {
+                title: updatedTitle,
+                content: updatedContent,
+                _id: postId
+            },
+            errorMessage: errors.array()[0].msg,
+            validationErrors: errors.array()
+        });
+    }
+
+    Post.findById(postId)
+        .then(post => {
+            if(post.userId.toString() !== req.user._id.toString()){
+                return res.redirect('/');
+            }
+            post.title = updatedTitle;
+            post.content = updatedContent;
+            if(image){
+                fileHelper.deleteFile(post.imageUrl);
+                product.imageUrl = image.path;
+            }
+            return product.save().then(result => {
+                console.log('UPDATED POST!');
+                res.redirect('/admin/products');
+            })
+        })
+        .catch(err => {
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);
+        })
+};
+
+exports.deletePost = (req, res, next) => {
+    const postId = req.params.postId;
+    Post.findById(postId)
+        .then(post => {
+            if(!post){
+                return next(new Error('Post not found!'));
+            }
+            fileHelper.deleteFile(post.imageUrl);
+            return Post.deleteOne({ _id: postId, userId: req.user._id });
+        })
+        .then(() => {
+            console.log('DESTROYED POST');
+            res.status(200).json({message: 'Success!'});
+        })
+        .catch(err => {
+            res.status(500).json({message: 'Deleting post failed!'});
         });
 };

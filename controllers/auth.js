@@ -157,3 +157,5 @@ exports.postLogout = (req, res, next) => {
       res.redirect('/');
     });
 };
+
+//Optional is reseting the password but since I'm doing this as a blog i might use myself, there wont be implementation of reseting the password functionality

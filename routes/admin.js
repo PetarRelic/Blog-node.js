@@ -18,12 +18,25 @@ router.get('/add-post', isAuth, adminController.getAddPost);
 router.post('/add-post',
     [
         body('title').isString().isLength({ min: 3 }).trim(),
-        body('content').isString().isLength({ min: 3 }).trim(),
-        body('image').not().isEmpty()
+        body('content').isString().isLength({ min: 3 }).trim()
+        //body('image').not().isEmpty()
     ],
-    isAuth,
-    adminController.postAddPost);
+isAuth,
+adminController.postAddPost);
 
+
+router.get('/edit-post/:postId', isAuth, adminController.getEditPost);
+
+//posting the edited post
+router.post('/edit-post', [
+    body('title').isString().isLength({ min: 3 }).trim(),
+    body('content').isString().isLength({ min: 3 }).trim()
+],
+isAuth,
+adminController.postEditPost);
+
+//deleting post
+router.delete('/post/:postId', isAuth, adminController.deletePost);
 
 
 module.exports = router;

@@ -3,19 +3,10 @@
     <button id="side-menu-toggle">Menu</button>
     <nav class="main-header__nav">
         <ul class="main-header__item-list">
-            <!-- <li class="main-header__item">
-                <a class="<%= path === '/' ? 'active' : '' %>" href="/">Shop</a>
-            </li> -->
             <li class="main-header__item">
-                <a class="<%= path === '/posts' ? 'active' : '' %>" href="/posts">Posts</a>
+                <a class="<%= path === '/posts' ? 'active' : '' %>" href="/posts">Blog</a>
             </li>
             <% if (isAuthenticated) { %>
-                <!-- <li class="main-header__item">
-                    <a class="<%= path === '/cart' ? 'active' : '' %>" href="/cart">Cart</a>
-                </li> -->
-                <!-- <li class="main-header__item">
-                    <a class="<%= path === '/orders' ? 'active' : '' %>" href="/orders">Orders</a>
-                </li> -->
                 <li class="main-header__item">
                     <a class="<%= path === '/admin/add-post' ? 'active' : '' %>" href="/admin/add-post">Add Post
                     </a>
@@ -48,19 +39,13 @@
 
 <nav class="mobile-nav">
     <ul class="mobile-nav__item-list">
-        <!-- <li class="mobile-nav__item">
+        <li class="mobile-nav__item">
             <a class="<%= path === '/' ? 'active' : '' %>" href="/">Shop</a>
-        </li> -->
+        </li>
         <li class="mobile-nav__item">
             <a class="<%= path === '/posts' ? 'active' : '' %>" href="/posts">Posts</a>
         </li>
         <% if (isAuthenticated) { %>
-            <!-- <li class="mobile-nav__item">
-                <a class="<%= path === '/cart' ? 'active' : '' %>" href="/cart">Cart</a>
-            </li>
-            <li class="mobile-nav__item">
-                <a class="<%= path === '/orders' ? 'active' : '' %>" href="/orders">Orders</a>
-            </li> -->
             <li class="mobile-nav__item">
                 <a class="<%= path === '/admin/add-post' ? 'active' : '' %>" href="/admin/add-post">Add Post
                 </a>
